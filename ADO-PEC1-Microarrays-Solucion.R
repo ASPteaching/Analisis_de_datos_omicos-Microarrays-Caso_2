@@ -1,3 +1,21 @@
+## ----class.source = 'fold-hide', setup, include=FALSE--------------------------
+library(knitr)
+library(rmdformats)
+
+## Global options
+options(max.print="75")
+opts_chunk$set(echo=TRUE,
+	             cache=FALSE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=75)
+
+
+## ---- fig.align='center'-------------------------------------------------------
+knitr::include_graphics("images/analysisProcess.png")
 
 
 ## ---- librerias, echo=TRUE-----------------------------------------------------
@@ -17,8 +35,6 @@ installifnot("annotate")
 installifnot("hwriter")
 installifnot("gplots")
 installifnot("GOstats")
-installifnot("clusterprofiler")
-
 
 ## ----class.source = 'fold-hide'------------------------------------------------
 listaArchivos <- list.files("datos", pattern="*.CEL")
@@ -260,7 +276,7 @@ vennDiagram (res.selected[,1:3], main="Genes in common #1", cex=0.9)
 
 ## ------------------------------------------------------------------------------
 xlimits <- c(-3,+3)
-ylimits <- c(0,8)
+# ylimits <- c(0,8)
 genenames<- topTab_AsintVSSano_Anot$SYMBOL
 coef <- 1
 volcanoplot(fit.main, highlight=10,
@@ -301,14 +317,14 @@ symbols<- AnnotationDbi::select(clariomshumantranscriptcluster.db, probeNames.se
 colnames(exprs2cluster)<-sampleLabels
 rownames(exprs2cluster)<- symbols
 color.map <- function(grupo) { 
-  if (grupo=="CTL"){
-    c<- "yellow" 
+  if (grupo=="SINT"){
+    c<- "red" 
   }else{ 
-    if (grupo=="MET"){
-      c<- "red"
+    if (grupo=="ASINT"){
+      c<- "green"
     }else{
-     if (grupo=="METPER"){
-      c<- "red"
+     if (grupo=="SANO"){
+      c<- "blue"
      }else{
        c<- "green"
      }
@@ -335,6 +351,11 @@ selGenes_SintVSAsint <-(topTab_SintVSAsint_Anot %>%
     dplyr::select (ENTREZID) %>%
     unique)[,1]
 
+selGenes_SintVSSano <-(topTab_SintVSSano_Anot %>%
+    subset(adj.P.Val < 0.05) %>%
+    dplyr::select (ENTREZID) %>%
+    unique)[,1]
+
 geneUniverse <- (topTab_SintVSAsint_Anot %>%
     dplyr::select (ENTREZID) %>%
     unique)[,1]
@@ -342,7 +363,7 @@ geneUniverse <- (topTab_SintVSAsint_Anot %>%
 # La notación anterior pretende ser más clara y acorde con las tendencias actuales en R
 # EL mismo resultado se habría podido obtener con un enfoque más clásico aunque algo más críptico : 
 # selGenes_AsintVSSano<-  unique(subset(topTab_AsintVSSano_Anot, adj.P.Val < 0.05)$ENTREZID)
-# selGenes_SintVSAsint  <-unique(subset(topTab_SintVSAsint, adj.P.Val < 0.05)$ENTREZID)
+# etc
 # geneUniverse <- unique(topTab_SintVSAsint$ENTREZID)
 
 
@@ -365,6 +386,15 @@ GOparamsSintVSAsint = new("GOHyperGParams",
     conditional=FALSE,
     testDirection="over")
 
+GOparamsSintVSSano = new("GOHyperGParams",
+    geneIds=selGenes_SintVSSano, 
+    universeGeneIds=geneUniverse,
+    annotation="org.Hs.eg.db", 
+    ontology="BP",
+    pvalueCutoff=0.001, 
+    conditional=FALSE,
+    testDirection="over")
+
 KEGGparamsAsintVSSano <- new("KEGGHyperGParams",
     geneIds=selGenes_AsintVSSano, 
     universeGeneIds=geneUniverse,
@@ -377,14 +407,22 @@ KEGGparamsSintVSAsint = new("KEGGHyperGParams",
     annotation="org.Hs.eg.db", 
     pvalueCutoff=0.05)
 
+KEGGparamsSintVSSano = new("KEGGHyperGParams",
+    geneIds=selGenes_SintVSSano, 
+    universeGeneIds=geneUniverse,
+    annotation="org.Hs.eg.db", 
+    pvalueCutoff=0.05)
+
 
 
 ## ----class.source = 'fold-hide', ORAAnalysis, eval=TRUE------------------------
 # Ejecutamos los análisis
 GOHyperAsintVSSano <- hyperGTest(GOparamsAsintVSSano)
 GOHyperSintVSAsint <- hyperGTest(GOparamsSintVSAsint)
+GOHyperSintVSSano <- hyperGTest(GOparamsSintVSSano)
 KEGGHyperAsintVSSano <- hyperGTest(KEGGparamsAsintVSSano)
 KEGGHyperSintVSAsint <- hyperGTest(KEGGparamsSintVSAsint)
+KEGGHyperSintVSSano <- hyperGTest(KEGGparamsSintVSSano)
 
 
 
@@ -410,7 +448,15 @@ htmlReport(GOHyperSintVSAsint, file = GOfilename, summary.args=list("htmlLinks"=
 KEGGfilename <- paste0("KEGGResults.", comparison,".html")
 htmlReport(KEGGHyperAsintVSSano, file = KEGGfilename, summary.args=list("htmlLinks"=TRUE))
 
+comparison <-"SintVSSano"
+GOfilename <- paste0("GOResults.", comparison,".html")
+htmlReport(GOHyperSintVSAsint, file = GOfilename, summary.args=list("htmlLinks"=TRUE))
 
-## ----insertaCodigo,  child="ADO-PEC1-Microarrays-Solucion.R",echo=TRUE, eval=FALSE, highlight=TRUE----
+KEGGfilename <- paste0("KEGGResults.", comparison,".html")
+htmlReport(KEGGHyperAsintVSSano, file = KEGGfilename, summary.args=list("htmlLinks"=TRUE))
+
+
+## ----insertaCodigo, echo=TRUE, eval=FALSE, highlight=TRUE----------------------
+## 
 ## 
 

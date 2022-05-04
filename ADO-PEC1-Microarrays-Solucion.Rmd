@@ -1,5 +1,5 @@
 ---
-title: "Análisis de Datos Ómicos. SOlución Primera PEC"
+title: "Análisis de Datos Ómicos. Solución Primera PEC"
 author: "Alex Sánchez"
 date: "`r Sys.Date()`"
 output:
@@ -50,17 +50,17 @@ Este trabajo puede enmarcarse en los estudios que se han llevado a cabo a raíz 
 En esta PEC analizaremos los datos de un estudio reciente [@Masood2021] llevado a cabo con una cohorte de pacientes en Pakistan y cuyos datos han sido depositados en el repositorio "Gene Expression Omnibus", con 
 identificador GSE177477.
 
-Para este estudio, los investigadores trabajaron con muestras de sangre de humanos que clasificaron en tres grupos: HEALTHY, sin la enfermedad, ASYMPTOMATIC, enfermos sin síntomas, SYMPTOMATIC, enfermos con síntomas.
+Para este estudio, los investigadores trabajaron con muestras de sangre de humanos que clasificaron en tres grupos: SANOS, sin la enfermedad, ASINTOMÁTICOS, enfermos sin síntomas, SINTOMÁTICOS, enfermos con síntomas.
 
 El objetivo del análisis que se plantea en la PEC es encontrar genes diferencialmente expresados entre los tres grupos y, a partir de éstos realizar un análisis de significación biológica que, de alguna forma, sirva para interpretar las diferencias observadas.
 
-El estudio original se realizó con 47 muestras. Para la PEC deberéis trabajar con un subconjunto de 15 muestras para lo que debéis escoger aleatoriamente cinco muestras ^[Por un error el enunciado de la PEC indicaba "cuatro" de cada grupo. Ambas soluciones (15 = 3x5 y 12 =3x4) se considerararn correctas.] de cada grupo y formar con ellas vuestros "targets".
+El estudio original se realizó con 47 muestras. Para la PEC deberéis trabajar con un subconjunto de 15 muestras para lo que debéis escoger aleatoriamente cinco muestras de cada grupo y formar con ellas vuestros "targets". _Por un error, el enunciado de la PEC indicaba "cuatro" de cada grupo. Ambas soluciones (15 = 3x5 y 12 =3x4) se considerarán correctas_.
 
-El objetivo de este análisis -que no coincide necesariamente con el del estudio original- es, pues, encontrar genes diferencialmente expresados, pathways que caracterizen dicha diferencia, entre individuos:
+El objetivo de este análisis -que no coincide necesariamente con el del estudio original- es, pues, encontrar genes diferencialmente expresados y  pathways que caracterizen dicha diferencia. Concretamente, se buscaran diferencias entre estos grupos:
 
-1. Sanos y asintomáticos
-2. Sanos y enfermos severos
-3. Asintomáticos y Enfermos severos
+1. Sanos y Asintomáticos
+2. Asintomáticos y Sintomáticos
+3. Sanos y Sintomáticos
 
 # Materiales y métodos
 
@@ -76,13 +76,13 @@ knitr::include_graphics("images/analysisProcess.png")
 
 *Esta primera parte es ficticia en tanto que no hemos tenido acceso al proceso de elaboración de los microarrays, por lo que he escrito lo que suele ponerse en esta parte*
 
-Antes de hibridar los microarrays se comprobó la calidad del cRNA de cada muestra. Sólo las que demostraron una calidad suficiente -presumiblemente un valor de "Bio-analyser" igual o superior a 7- se sometieron a análisis posterior.
+Antes de hibridar los microarrays se comprobó la calidad del RNA de cada muestra. Sólo las que demostraron una calidad suficiente -presumiblemente un valor de "Bio-analyser" igual o superior a 7- se sometieron a análisis posterior.
 
 Los valores "crudos" de expresión obtenidos directamente de los archivos CEL se pre-procesaron utilizando el método de RMA [@rmaIri], un proceso de tres pasos que integra la corrección de fondo, la normalización y el resumen de los valores del grupo de sondas en un único valor de expresión *absoluta*. Dichos valores normalizados fueron la base para todos los análisis.
 
 Antes de la selección de genes los valores normalizados se sometieron a un filtraje no específico para eliminar los genes de baja señal (los genes cuya media de la señal en cada grupo no supera un umbral mínimo) y los genes de baja variabilidad (los genes cuyo rango intercuartil entre todas las muestras no superó un umbral mínimo).
 
-La selección de genes diferencialmente expresados entre condiciones experimentales se baso en la utilización de modelos lineales complementados con una moderación de la varianza mediante métodos bayesianos empíricos siguiendo la metodología desarrollada por Smyth (@Smyth2004). Este método extiende el análisis de la varianza clásico utilizando métodos Bayesianos empíricos para combinar la información de cada gen individual con la de todos los genes restantes para obtener mejores estimaciones de error. Esto es de gran utilidad en análisis de microarrays, un contexto en el que el tamaño de las muestras es a menudo pequeño lo que puede dar lugar a estimaciones de los errores erráticos y, en consecuencia, p-valores que no son de fiar.
+La selección de genes diferencialmente expresados entre condiciones experimentales se baso en la utilización de modelos lineales complementados con una moderación de la varianza mediante métodos bayesianos empíricos siguiendo la metodología desarrollada por Smythe (@Smyth2004). Este método extiende el análisis de la varianza clásico utilizando métodos Bayesianos empíricos para combinar la información de cada gen individual con la de todos los genes restantes para obtener mejores estimaciones de error. Esto es de gran utilidad en análisis de microarrays, un contexto en el que el tamaño de las muestras es a menudo pequeño lo que puede dar lugar a estimaciones de los errores erráticos y, en consecuencia, p-valores que no son de fiar.
 
 Los genes más relevantes de cada comparación se resaltaron utilizando *volcano-plots*, que organizan los genes a lo largo de dos dimensiones que podemos considerar de importancia biológica y estadística. El eje horizontal representa el cambio medio de expresión entre los dos grupos (en una escala logarítmica, por lo que la regulación hacia arriba y abajo aparecen simétrica), y el segundo (vertical) representa el *menos logaritmo del p-valor* por lo que los genes cuyo p-valor asociado sea inferior aparecen más arriba. El primer eje indica el impacto biológico del cambio, y el segundo indica la evidencia estadística, o la fiabilidad de dicho cambio.
 
@@ -90,7 +90,7 @@ Con el fin de hacer frente a la problemática derivada del hecho de que muchas p
 
 Los genes seleccionados como diferencialmente expresados se agruparon para buscar patrones comunes de expresión entre condiciones experimentales. Para ello se utilizaron mapas de colores o *Heatmaps* que realizan una agrupación jerárquica de los genes y/o las muestras y la representan mediante una gama de colores apropiada, de forma que valores altos o bajos se corresponden a colores distintos de la gama escogida.
 
-Las listas de genes diferencialmente expresados se anotaron en diversas bases de datos (Entrez, Unigene, Gene Ontology, KEGG, ...) utilizando los paquetes de anotación para microarrays de affymetrix disponibles en el proyecto Bioconductor <http://bioconductor.org>.
+Las listas de genes diferencialmente expresados se anotaron en diversas bases de datos ("Entrez", "Unigene", "Gene Ontology", "KEGG", ...) utilizando los paquetes de anotación para microarrays de Affymetrix disponibles en el proyecto Bioconductor <http://bioconductor.org>.
 
 Para contribuir a la interpretación biológica de los resultados se realizó un análisis de enriquecimiento (@Falcon:2007) que busca establecer si las categorías funcionales de los genes seleccionados aparecen entre estos genes con mayor (o menor) frecuencia que entre todos los del genoma. De ser así se indica que la lista de genes se encuentra "enriquecida" en estas funcionalidades, o lo que es lo mismo que los procesos afectados por las diferencias son éstos.
 
@@ -117,7 +117,7 @@ installifnot("annotate")
 installifnot("hwriter")
 installifnot("gplots")
 installifnot("GOstats")
-installifnot("clusterprofiler")
+# installifnot("clusterprofiler")
 ```
 
 # Obtención y lectura de los datos
@@ -147,7 +147,7 @@ El código siguiente muestra como crear un archivo `targetsAll.csv` con los nomb
 
 Supondremos que hemos descomprimido el archivo .tar y hemos copiado los archivos .CEL a un directorio de nuestro directorio de trabajo denominado "datos". 
 
-También asumimos que sabemos, (orque lo pone en la página de GEO, [https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE177477](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE177477)) que:
+También asumimos que sabemos, (porque lo pone en la página de GEO, [https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE177477](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE177477)) que:
 - Las muestras S1 a S11 son "Sintomáticas".
 - Las muestras S12 a S29 son "Asintomáticas
 - Las muestras S30 a S47 son "Controles_Sanos"
@@ -172,7 +172,7 @@ El contenido del archivo `targets` se utiliza en la lectura de los datos y la cr
 
 ### Creación de un subconjunto para el análisis
 
-Con el fin de que nuestro análisis contenga un número moderado de muestras podemos extraer aleatoriamente 6 muestras de cada grupo. Para ello utilizaremos la función `selectSample`para crear un nuevo objeto "targets" que tenga únicamente las filas seleccionadas.
+Con el fin de que nuestro análisis contenga un número moderado de muestras podemos extraer aleatoriamente 5 muestras de cada grupo. Para ello utilizaremos la función `selectSample`para crear un nuevo objeto "targets" que tenga únicamente las filas seleccionadas.
 
 ```{r class.source = 'fold-hide', echo=TRUE}
 selectSamples<- function (myID){
@@ -203,7 +203,7 @@ Para ello, simplemente, revertimos el proceso y denominamos:
 selectedTargets <- targets
 ```
 
-Si no hiciérais el paso anterior trabajaríais únicamente con las 15 muestras seleccionadas.
+Si no hicierais el paso anterior trabajaríais únicamente con las 15 muestras seleccionadas.
 
 
 ## Lectura de los datos
@@ -313,7 +313,7 @@ Los resultados del control de calidad realizado con `arrayQualityMetrics` se enc
 
 Los análisis de componentes principales sugieren que puede haber algún factor que se superponga a las diferencias entre los grupos. 
 
-Una posibilidad es decidir que, puesto que ésto es así a todas luces (hay dos tipos de muestras) se atyribuye el batch arbitrariamente.
+Una posibilidad es decidir que, puesto que ésto es así a todas luces (hay dos tipos de muestras) se atribuye el batch arbitrariamente.
 
 Otra posibilidad es consultar la información sobre covariables disponible en GEO usando el paquete `GEOquery`. Esta opción que se presenta "no evaluada" tampoco resulta de utilidad porque las únicas covariables que este archivo contiene son la enfermedad (SANO/ENFERMO) o los Síntomas (SANO/ASNITOMATICO/SINTOMATICO).
 
@@ -348,7 +348,7 @@ Como puede verse todos los arrays se hibridaron en períodos de tiempo distintos
 - Todos los sintomáticos en 2020
 - Los asintomáticos en 2020 y 2021
 
-Curiosamente los dos grupos que apparentemente aparecen en el diagrama de cajas no se relacionan con los síntomas pero en vista de que no se dispone de información sobre qué causa la diferencia y que además hay un desbalanceo entre tipo de muestras por síntomas y años, asumiremos que este efecto puede afectar los resultados pero no intentaremos corregirlo
+Curiosamente los dos grupos que aparentemente aparecen en el diagrama de cajas no se relacionan con los síntomas pero en vista de que no se dispone de información sobre qué causa la diferencia y que además hay un desbalanceo entre tipo de muestras por síntomas y años, asumiremos que este efecto puede afectar los resultados pero no intentaremos corregirlo
 
 
 ## Normalizacion y Filtraje
@@ -366,7 +366,7 @@ Si repetimos el PCA y la visualización observamos que los grupos quedan aún m�
 plotPCA3(exprs(eset_rma), labels=sampleLabels, size=2, factor =grupos, colores = unique(colores), title="selected samples", scale=TRUE)
 ```
 
-Interesantemente, una vez normalizados los datos, ha bajado el % de variabilidad explicada pero la diferencia entre individuos sintomáticos y los que no lo son se muestra claramente, lo que sugiere que globalmente esta diferencia es superior a la atribuïble a posibles efectos batch.
+Interesantemente, una vez normalizados los datos, ha bajado el % de variabilidad explicada pero la diferencia entre individuos sintomáticos y los que no lo son se muestra claramente, lo que sugiere que, globalmente, esta diferencia es superior a la atribuible a posibles efectos batch.
 
 ## Filtraje
 
@@ -385,13 +385,13 @@ __Aquí hay que proceder con cuidado__ En arrays de tipo 3'ITV esta información
 - Los paquetes pd.XXX
 - los paquetes XXXtranscriptcluster.db
 
-Paa la anotación necesitamos el segundo, por lo que debemos modificar el contenido del campo "annotation"
+Para la anotación necesitamos el segundo, por lo que debemos modificar el contenido del campo "annotation"
 
 ```{r}
 annotation(eset_rma) <-"clariomshumantranscriptcluster.db" 
 ```
 
-Aplicaremos un filtraje "estándar" que retenga el 50% de los genes con mayor variabilidad de entre aquellos que estan correctamente anotados, es decir eliminando aquellos que no tienen identificador en la base de datos `Entrez`.
+Aplicaremos un filtraje "estándar" que retenga el 50% de los genes con mayor variabilidad de entre aquellos que están correctamente anotados, es decir eliminando aquellos que no tienen identificador en la base de datos `Entrez`.
 
 ```{r class.source = 'fold-hide', filtraje}
 library(genefilter)
@@ -401,7 +401,7 @@ filtered <- nsFilter(eset_rma, require.entrez=TRUE,
          filterByQuantile=TRUE, feature.exclude="^AFFX")
 ```
 
-El resultado del filtraje es una lista con varios objetos, que informan de lo que se ha descartado y un objeto `expressionSet` que, en lugar de 29129 "features" tiene 10039 que son los que estan anotados y tienen mayor variabilidad. La selección de genes se llevará a cabo sobre esta lista.
+El resultado del filtraje es una lista con varios objetos, que informan de lo que se ha descartado y un objeto `expressionSet` que, en lugar de 29129 "features" tiene 10039 que son los que están anotados y tienen mayor variabilidad. La selección de genes se llevará a cabo sobre esta lista.
 
 ```{r, echo=TRUE}
 names(filtered)
@@ -568,7 +568,8 @@ Si ahora visualizamos los resultados de cada comparación por separado, podemos 
 
 ```{r}
 xlimits <- c(-3,+3)
-ylimits <- c(0,8)
+maxY <- -log(topTab_AsintVSSano_Anot$adj.P.Val[1])
+ylimits <- c(0,maxY)
 genenames<- topTab_AsintVSSano_Anot$SYMBOL
 coef <- 1
 volcanoplot(fit.main, highlight=10,
@@ -580,6 +581,8 @@ volcanoplot(fit.main, highlight=10,
             
 abline(v = c(-1, 1))
 
+xlimits <- c(-5,+5)
+ylimits <- c(0,40)
 genenames<- topTab_SintVSAsint_Anot$SYMBOL
 coef <- 2
 volcanoplot(fit.main, highlight=10,
@@ -590,6 +593,8 @@ volcanoplot(fit.main, highlight=10,
             xlim=xlimits, ylim=ylimits)
 abline(v = c(-1, 1))
 
+xlimits <- c(-5,+5)
+ylimits <- c(0,40)
 genenames<- topTab_SintVSSano_Anot$SYMBOL
 coef <- 3
 volcanoplot(fit.main, highlight=10,
@@ -618,14 +623,14 @@ symbols<- AnnotationDbi::select(clariomshumantranscriptcluster.db, probeNames.se
 colnames(exprs2cluster)<-sampleLabels
 rownames(exprs2cluster)<- symbols
 color.map <- function(grupo) { 
-  if (grupo=="CTL"){
-    c<- "yellow" 
+  if (grupo=="SINT"){
+    c<- "red" 
   }else{ 
-    if (grupo=="MET"){
-      c<- "red"
+    if (grupo=="ASINT"){
+      c<- "green"
     }else{
-     if (grupo=="METPER"){
-      c<- "red"
+     if (grupo=="SANO"){
+      c<- "blue"
      }else{
        c<- "green"
      }
@@ -675,6 +680,11 @@ selGenes_SintVSAsint <-(topTab_SintVSAsint_Anot %>%
     dplyr::select (ENTREZID) %>%
     unique)[,1]
 
+selGenes_SintVSSano <-(topTab_SintVSSano_Anot %>%
+    subset(adj.P.Val < 0.05) %>%
+    dplyr::select (ENTREZID) %>%
+    unique)[,1]
+
 geneUniverse <- (topTab_SintVSAsint_Anot %>%
     dplyr::select (ENTREZID) %>%
     unique)[,1]
@@ -682,7 +692,7 @@ geneUniverse <- (topTab_SintVSAsint_Anot %>%
 # La notación anterior pretende ser más clara y acorde con las tendencias actuales en R
 # EL mismo resultado se habría podido obtener con un enfoque más clásico aunque algo más críptico : 
 # selGenes_AsintVSSano<-  unique(subset(topTab_AsintVSSano_Anot, adj.P.Val < 0.05)$ENTREZID)
-# selGenes_SintVSAsint  <-unique(subset(topTab_SintVSAsint, adj.P.Val < 0.05)$ENTREZID)
+# etc
 # geneUniverse <- unique(topTab_SintVSAsint$ENTREZID)
 ```
 
@@ -712,6 +722,15 @@ GOparamsSintVSAsint = new("GOHyperGParams",
     conditional=FALSE,
     testDirection="over")
 
+GOparamsSintVSSano = new("GOHyperGParams",
+    geneIds=selGenes_SintVSSano, 
+    universeGeneIds=geneUniverse,
+    annotation="org.Hs.eg.db", 
+    ontology="BP",
+    pvalueCutoff=0.001, 
+    conditional=FALSE,
+    testDirection="over")
+
 KEGGparamsAsintVSSano <- new("KEGGHyperGParams",
     geneIds=selGenes_AsintVSSano, 
     universeGeneIds=geneUniverse,
@@ -724,6 +743,12 @@ KEGGparamsSintVSAsint = new("KEGGHyperGParams",
     annotation="org.Hs.eg.db", 
     pvalueCutoff=0.05)
 
+KEGGparamsSintVSSano = new("KEGGHyperGParams",
+    geneIds=selGenes_SintVSSano, 
+    universeGeneIds=geneUniverse,
+    annotation="org.Hs.eg.db", 
+    pvalueCutoff=0.05)
+
 ```
 
 - Una vez creados los parámetros el análisis se lleva a cabo invocando la función `hyperGTest`que realiza un test de Fisher (hipergeométrico) para todas las categorías GO de la ontología seleccionada.
@@ -732,14 +757,16 @@ KEGGparamsSintVSAsint = new("KEGGHyperGParams",
 # Ejecutamos los análisis
 GOHyperAsintVSSano <- hyperGTest(GOparamsAsintVSSano)
 GOHyperSintVSAsint <- hyperGTest(GOparamsSintVSAsint)
+GOHyperSintVSSano <- hyperGTest(GOparamsSintVSSano)
 KEGGHyperAsintVSSano <- hyperGTest(KEGGparamsAsintVSSano)
 KEGGHyperSintVSAsint <- hyperGTest(KEGGparamsSintVSAsint)
+KEGGHyperSintVSSano <- hyperGTest(KEGGparamsSintVSSano)
 
 ```
 
 ## Resultados
 
-Los resultados del análisis se encuentran en un objeto que se puede visualizar directamente.
+Los resultados del análisis se encuentran en un objeto que se puede visualizar directamente. Por ejemplo
 
 ```{r}
 summary(GOHyperAsintVSSano)
@@ -764,17 +791,26 @@ htmlReport(GOHyperSintVSAsint, file = GOfilename, summary.args=list("htmlLinks"=
 
 KEGGfilename <- paste0("KEGGResults.", comparison,".html")
 htmlReport(KEGGHyperAsintVSSano, file = KEGGfilename, summary.args=list("htmlLinks"=TRUE))
+
+comparison <-"SintVSSano"
+GOfilename <- paste0("GOResults.", comparison,".html")
+htmlReport(GOHyperSintVSAsint, file = GOfilename, summary.args=list("htmlLinks"=TRUE))
+
+KEGGfilename <- paste0("KEGGResults.", comparison,".html")
+htmlReport(KEGGHyperAsintVSSano, file = KEGGfilename, summary.args=list("htmlLinks"=TRUE))
 ```
 
 # Discusión y conclusiones
 
-El estudio que se ha presentado en este documento es un análisis estándar de microarrays y como tal adolece de sus ventajas e inconvenientes.
+El estudio que se ha realizado en este documento es un análisis estándar de microarrays y como tal adolece de sus ventajas e inconvenientes.
 
-Podemos encontrar las limitaciones habituales aparte del problema específico del efecto batch.
+Probablemente el principal inconveniente, _que tan sólo hemos detectado al trabajar con todas las muestras_ es un posible efecto batch, que hemos decidido no intentar controlar al no estar claro su origen. Este efecto batch puede haber influido en la selección de genes, pero los resultados parecen coherentes. Es decir
+
+- Hemos encontrado pocos genes diferencialmente expresados entre individuos sanos y asintomáticos, y muchos más entre sintomáticos y las otras dos categorías.
+- Hemos encontrado que entre las categorías enriquecidas aparece muchas que son de respuesta inmune, lo que tiene sentido si se considera la respuesta a una infección. 
 
 Como inconveniente generales podemos destacar:
 
--   El tamaño de las muestras utilizadas es bastante limitado lo que determina que el estudio tenga poca potencia por lo que \emph{probablemente} habrá menos reproducibilidad y más falsos negativos de los que sería deseable si se utilizara un mayor número de muestras.
 -   En cada paso del proceso se han tomado decisiones relativamente arbitrarias acerca de los métodos a seguir para la normalización, filtrado selección de genes, etc. La decisión de si estos métodos son los más adecuados o no es probablemente subjetiva por lo que sería interesante saber como cambian los resultados si se tomaran otras decisiones.
 
 Estos problemas no son problemas de este estudio concreto, sino en general de los estudios basados en microarrays por lo que, limitaciones aparte, el estudio aportará probablemente información valiosa que permitirá un seguimiento posterior del problema.
@@ -789,6 +825,7 @@ Si insertamos el archivo resultante en un "chunk de código" marcado con `eval=F
 
 ```{r insertaCodigo, echo=TRUE, eval=FALSE, highlight=TRUE}
 
+knitr::include_graphics("images/analysisProcess.png")
 
 
 ## ---- librerias, echo=TRUE-----------------------------------------------------
@@ -808,8 +845,6 @@ installifnot("annotate")
 installifnot("hwriter")
 installifnot("gplots")
 installifnot("GOstats")
-installifnot("clusterprofiler")
-
 
 ## ----class.source = 'fold-hide'------------------------------------------------
 listaArchivos <- list.files("datos", pattern="*.CEL")
@@ -1051,7 +1086,7 @@ vennDiagram (res.selected[,1:3], main="Genes in common #1", cex=0.9)
 
 ## ------------------------------------------------------------------------------
 xlimits <- c(-3,+3)
-ylimits <- c(0,8)
+# ylimits <- c(0,8)
 genenames<- topTab_AsintVSSano_Anot$SYMBOL
 coef <- 1
 volcanoplot(fit.main, highlight=10,
@@ -1092,14 +1127,14 @@ symbols<- AnnotationDbi::select(clariomshumantranscriptcluster.db, probeNames.se
 colnames(exprs2cluster)<-sampleLabels
 rownames(exprs2cluster)<- symbols
 color.map <- function(grupo) { 
-  if (grupo=="CTL"){
-    c<- "yellow" 
+  if (grupo=="SINT"){
+    c<- "red" 
   }else{ 
-    if (grupo=="MET"){
-      c<- "red"
+    if (grupo=="ASINT"){
+      c<- "green"
     }else{
-     if (grupo=="METPER"){
-      c<- "red"
+     if (grupo=="SANO"){
+      c<- "blue"
      }else{
        c<- "green"
      }
@@ -1126,6 +1161,11 @@ selGenes_SintVSAsint <-(topTab_SintVSAsint_Anot %>%
     dplyr::select (ENTREZID) %>%
     unique)[,1]
 
+selGenes_SintVSSano <-(topTab_SintVSSano_Anot %>%
+    subset(adj.P.Val < 0.05) %>%
+    dplyr::select (ENTREZID) %>%
+    unique)[,1]
+
 geneUniverse <- (topTab_SintVSAsint_Anot %>%
     dplyr::select (ENTREZID) %>%
     unique)[,1]
@@ -1133,7 +1173,7 @@ geneUniverse <- (topTab_SintVSAsint_Anot %>%
 # La notación anterior pretende ser más clara y acorde con las tendencias actuales en R
 # EL mismo resultado se habría podido obtener con un enfoque más clásico aunque algo más críptico : 
 # selGenes_AsintVSSano<-  unique(subset(topTab_AsintVSSano_Anot, adj.P.Val < 0.05)$ENTREZID)
-# selGenes_SintVSAsint  <-unique(subset(topTab_SintVSAsint, adj.P.Val < 0.05)$ENTREZID)
+# etc
 # geneUniverse <- unique(topTab_SintVSAsint$ENTREZID)
 
 
@@ -1156,6 +1196,15 @@ GOparamsSintVSAsint = new("GOHyperGParams",
     conditional=FALSE,
     testDirection="over")
 
+GOparamsSintVSSano = new("GOHyperGParams",
+    geneIds=selGenes_SintVSSano, 
+    universeGeneIds=geneUniverse,
+    annotation="org.Hs.eg.db", 
+    ontology="BP",
+    pvalueCutoff=0.001, 
+    conditional=FALSE,
+    testDirection="over")
+
 KEGGparamsAsintVSSano <- new("KEGGHyperGParams",
     geneIds=selGenes_AsintVSSano, 
     universeGeneIds=geneUniverse,
@@ -1168,14 +1217,22 @@ KEGGparamsSintVSAsint = new("KEGGHyperGParams",
     annotation="org.Hs.eg.db", 
     pvalueCutoff=0.05)
 
+KEGGparamsSintVSSano = new("KEGGHyperGParams",
+    geneIds=selGenes_SintVSSano, 
+    universeGeneIds=geneUniverse,
+    annotation="org.Hs.eg.db", 
+    pvalueCutoff=0.05)
+
 
 
 ## ----class.source = 'fold-hide', ORAAnalysis, eval=TRUE------------------------
 # Ejecutamos los análisis
 GOHyperAsintVSSano <- hyperGTest(GOparamsAsintVSSano)
 GOHyperSintVSAsint <- hyperGTest(GOparamsSintVSAsint)
+GOHyperSintVSSano <- hyperGTest(GOparamsSintVSSano)
 KEGGHyperAsintVSSano <- hyperGTest(KEGGparamsAsintVSSano)
 KEGGHyperSintVSAsint <- hyperGTest(KEGGparamsSintVSAsint)
+KEGGHyperSintVSSano <- hyperGTest(KEGGparamsSintVSSano)
 
 
 
@@ -1201,10 +1258,12 @@ htmlReport(GOHyperSintVSAsint, file = GOfilename, summary.args=list("htmlLinks"=
 KEGGfilename <- paste0("KEGGResults.", comparison,".html")
 htmlReport(KEGGHyperAsintVSSano, file = KEGGfilename, summary.args=list("htmlLinks"=TRUE))
 
+comparison <-"SintVSSano"
+GOfilename <- paste0("GOResults.", comparison,".html")
+htmlReport(GOHyperSintVSAsint, file = GOfilename, summary.args=list("htmlLinks"=TRUE))
 
-## ----insertaCodigo,  child="ADO-PEC1-Microarrays-Solucion.R",echo=TRUE, eval=FALSE, highlight=TRUE----
-## 
-
+KEGGfilename <- paste0("KEGGResults.", comparison,".html")
+htmlReport(KEGGHyperAsintVSSano, file = KEGGfilename, summary.args=list("htmlLinks"=TRUE))
 
 
 ```
